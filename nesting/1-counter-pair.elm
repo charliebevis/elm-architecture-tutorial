@@ -7,7 +7,7 @@ import Html.Events exposing (onClick)
 
 main =
   App.beginnerProgram
-    { model = init 0 0
+    { model = init 10 0
     , update = update
     , view = view
     }
