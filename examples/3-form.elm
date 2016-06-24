@@ -2,6 +2,7 @@ import Html exposing (..)
 import Html.App as Html
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
+import String exposing (toInt)
 
 
 main =
@@ -18,6 +19,7 @@ main =
 
 type alias Model =
   { name : String
+  , age : String
   , password : String
   , passwordAgain : String
   }
@@ -25,7 +27,7 @@ type alias Model =
 
 model : Model
 model =
-  Model "" "" ""
+  Model "" "" "" ""
 
 
 
@@ -34,6 +36,7 @@ model =
 
 type Msg
     = Name String
+    | Age String
     | Password String
     | PasswordAgain String
 
@@ -43,6 +46,9 @@ update msg model =
   case msg of
     Name name ->
       { model | name = name }
+
+    Age age ->
+      { model | age = age}
 
     Password password ->
       { model | password = password }
@@ -59,19 +65,29 @@ view : Model -> Html Msg
 view model =
   div []
     [ input [ type' "text", placeholder "Name", onInput Name ] []
+    , input [ type' "number", placeholder "Age", onInput Age ] []
     , input [ type' "password", placeholder "Password", onInput Password ] []
     , input [ type' "password", placeholder "Re-enter Password", onInput PasswordAgain ] []
     , viewValidation model
     ]
 
 
+passwordsDoNotMatch model = model.password /= model.passwordAgain
+
+ageIsPositive model = case (String.toInt (model.age)) of
+  Err _ -> False
+  Ok _ -> True
+
 viewValidation : Model -> Html msg
 viewValidation model =
   let
     (color, message) =
-      if model.password == model.passwordAgain then
-        ("green", "OK")
-      else
+      if (passwordsDoNotMatch model) then
         ("red", "Passwords do not match!")
+      else
+      if (not(ageIsPositive model)) then
+        ("red", "Age is not positive!")
+      else
+        ("green", "OK")
   in
     div [ style [("color", color)] ] [ text message ]
